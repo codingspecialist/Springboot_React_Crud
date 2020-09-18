@@ -2,7 +2,8 @@ import React from 'react';
 import { Navbar, Nav, NavbarBrand } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
-const NavigationBar = () => {
+const NavigationBar = (props) => {
+
 	return (
 		<div>
 			<Navbar bg="dark" variant="dark">
