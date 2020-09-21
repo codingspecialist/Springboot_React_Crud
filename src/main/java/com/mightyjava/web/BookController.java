@@ -1,8 +1,10 @@
 package com.mightyjava.web;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,8 +29,8 @@ public class BookController {
 	private BookRepository bookRepository;
 	
 	@GetMapping({"", "/"})
-	public ResponseEntity<List<Book>> findAll() {
-		return new ResponseEntity<>(bookRepository.findAll(), HttpStatus.OK);
+	public ResponseEntity<Page<Book>> findAll(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+		return new ResponseEntity<>(bookRepository.findAll(pageable), HttpStatus.OK);
 	}
 	
 	@PostMapping({"", "/"})
