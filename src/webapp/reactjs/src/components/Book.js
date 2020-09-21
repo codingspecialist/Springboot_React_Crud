@@ -15,7 +15,6 @@ const Book = (props) => {
 	});
 
 	useEffect(() => {
-		console.log("안녕");
 		let bookId;
 		if(props.match !== undefined){
 			bookId = props.match.params.id;

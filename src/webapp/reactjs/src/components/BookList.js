@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Table, ButtonGroup, Button, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ const BookList = (props) => {
 	const [booksInfo, setBooksInfo] = useState({});
 	const [books, setBooks] = useState([]);
 	const [currentPage, setCurrentPage] = useState(0);
+	const [search, setSearch] = useState('');
 
 	/* Array.from()으로 길이가 5, 값이 0인 배열 생성하기 */
 	// const arr = Array.from({length: 5}, () => 0);
@@ -20,7 +21,7 @@ const BookList = (props) => {
 	const refBooks = Array.from({ length: books.length }).map(() => createRef());
 
 	const changeColor = (i) => {
-		if (refBooks[i].current.style.color == 'red') {
+		if (refBooks[i].current.style.color === 'red') {
 			refBooks[i].current.style.color = 'white';
 		} else {
 			refBooks[i].current.style.color = 'red';
@@ -28,10 +29,9 @@ const BookList = (props) => {
 	}
 
 	const findAllBooks = () => {
-		axios.get("http://localhost:8081/rest/books?page="+currentPage)
+		console.log(1, search);
+		axios.get(`http://localhost:8081/rest/books?page=${currentPage}&search=${search}`)
 			.then(({ data }) => {
-				console.log(1,data.content);
-				console.log(2,data);
 				setBooks(data.content);
 				setBooksInfo(data);
 			});
@@ -47,11 +47,11 @@ const BookList = (props) => {
 	};
 
 	const prevPage = () => {
-		if(!booksInfo.first) setCurrentPage(currentPage - 1);
+		if (!booksInfo.first) setCurrentPage(currentPage - 1);
 	};
 
 	const nextPage = () => {
-		if(!booksInfo.last) setCurrentPage(currentPage + 1);
+		if (!booksInfo.last) setCurrentPage(currentPage + 1);
 	};
 
 	const firstPage = () => {
@@ -59,21 +59,31 @@ const BookList = (props) => {
 	};
 
 	const lastPage = () => {
-		let lastPageNum = Math.ceil(booksInfo.totalElements/5)-1; 
+		let lastPageNum = Math.ceil(booksInfo.totalElements / 5) - 1;
 		setCurrentPage(lastPageNum);
 	};
+
+	const searchChange = (e) => {
+		setSearch(e.target.value);
+	}
 
 	// didMount(), didUpdate(), willUnMount()
 	useEffect(() => {
 		findAllBooks();
+		
 		return () => {
 			console.log("뒷 정리 함수");
 		}
-	}, [currentPage]);
+	}, [currentPage, search]);
 
 	return (
-		<Card className={"border border-dark bg-dark text-white"}>
-			<Card.Header>BookList</Card.Header>
+		<Card className="bg-dark text-white"> 
+			<Card.Header>
+				<div className={"d-flex  flex-row justify-content-between"}>
+					BookList
+					<input onChange={searchChange} type="text" value={search} name="search" placeholder="Search" className={"info-border bg-dark text-white"}/>
+				</div>
+			</Card.Header>
 			<Card.Body>
 				<Table bordered hover striped variant="dark">
 					<thead>
@@ -112,21 +122,21 @@ const BookList = (props) => {
 				</Table>
 
 			</Card.Body>
-			<Card.Footer class="d-flex flex-row justify-content-end">
-					<InputGroup style={{width:300}}>
-						<InputGroup.Prepend>
-							<Button type="button" variant="outline-info" onClick={firstPage}>First</Button>
-							<Button type="button" variant="outline-info" onClick={prevPage}>Prev</Button>
-						</InputGroup.Prepend>
-						<InputGroup.Append>
-							<Button type="button" variant="outline-info" onClick={nextPage}>Next</Button>
-							<Button type="button" variant="outline-info" onClick={lastPage}>Last</Button>
-						</InputGroup.Append>
-					</InputGroup>
+			<Card.Footer className={"d-flex flex-row justify-content-end"}>
+				<InputGroup style={{ width: 300 }}>
+					<InputGroup.Prepend>
+						<Button type="button" variant="outline-info" onClick={firstPage}>First</Button>
+						<Button type="button" variant="outline-info" onClick={prevPage}>Prev</Button>
+					</InputGroup.Prepend>
+					<InputGroup.Append>
+						<Button type="button" variant="outline-info" onClick={nextPage}>Next</Button>
+						<Button type="button" variant="outline-info" onClick={lastPage}>Last</Button>
+					</InputGroup.Append>
+				</InputGroup>
 			</Card.Footer>
-		<br/><br/>
+			<br /><br />
 		</Card>
-		
+
 	);
 };
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mightyjava.domain.Book;
@@ -29,8 +30,14 @@ public class BookController {
 	private BookRepository bookRepository;
 	
 	@GetMapping({"", "/"})
-	public ResponseEntity<Page<Book>> findAll(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-		return new ResponseEntity<>(bookRepository.findAll(pageable), HttpStatus.OK);
+	public ResponseEntity<Page<Book>> findAll(@PageableDefault(size = 5, sort = "id", direction = Sort.Direction.DESC) Pageable pageable, String search) {
+		System.out.println("search : "+search);
+		if(search.equals("")) {
+			return new ResponseEntity<>(bookRepository.findAll(pageable), HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(bookRepository.mFindSearch(pageable, search), HttpStatus.OK);
+		}
+		
 	}
 	
 	@PostMapping({"", "/"})
